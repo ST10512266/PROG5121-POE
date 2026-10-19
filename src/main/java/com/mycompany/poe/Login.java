@@ -42,7 +42,7 @@ public class Login {
      }
       
        private static final String PASSWORD_REGEX =
-            "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{1,8}$";
+            "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$";
 
         public static boolean checkPasswordComplexity(String password) {
             if (password == null) {
@@ -68,7 +68,7 @@ public class Login {
                     return "Username is not correctly formatted, please ensure that your username contains an underscore and is no more than five characters";
                }
                     if(!checkPasswordComplexity(password)){
-                       return "Password is not correctly formatted; please ensure that the password contains at least eight characters, a capital letter, a chsracter";
+                       return "Password is not correctly formatted; please ensure that the password contains at least eight characters, a capital letter, and a special character";
                     }
                         if(!checkCellphoneNumber(cellPhoneNumber)){
                            return "Cellphone number incorrectly formatted or does not contain international code.";
