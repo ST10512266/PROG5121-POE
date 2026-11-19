@@ -4,15 +4,90 @@
  */
 package com.mycompany.poe;
 
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+
 
 /**
  *
  * @author Thandiswa
  */
 public class MessageTest {
+    
+    
+    public MessageTest(){
+    }
+     
+    
+    @BeforeAll
+    public static void setUpClass(){
+    }
+    
+    @AfterAll
+    public static void tearDownClass(){
+    }
+    
+    
+    
+      private Messages message1;
+    private Messages message2;
+    private Messages message3;
+    private Messages message4;
+    private Messages message5;
+    
+    @BeforeEach
+    public void setUp(){
+      
+        // Clear previous test data
+        Messages.getSentMessages().clear();
+        Messages.getStoredMessages().clear();
+        Messages.getDisregardedMessages().clear();
+
+        // Create the five test messages
+        message1 = new Messages(
+                "+27834557896",
+                "Did you get the cake?"
+        );
+
+        message2 = new Messages(
+                "+27838884567",
+                "Where are you? You are late! I have asked you to be on time."
+        );
+
+        message3 = new Messages(
+                "+27834484567",
+                "Yohoooo, I am at your gate."
+        );
+
+        message4 = new Messages(
+                "0838884567",
+                "It is dinner time !"
+        );
+
+        message5 = new Messages(
+                "+27838884567",
+                "Ok, I am leaving without you."
+        );
+
+        // Populate arrays for testing
+        Messages.getSentMessages().add(message1);
+        Messages.getStoredMessages().add(message2);
+        Messages.getDisregardedMessages().add(message3);
+        Messages.getSentMessages().add(message4);
+        Messages.getStoredMessages().add(message5);
+    }
+
+
+     
+    
+    @AfterEach
+    public void tearDown(){
+    }
+    
       // Test data from the brief
     private static final String RECIPIENT_1 = "+27718693002";
     private static final String TEXT_1 = "Hi Mike, can you join us for dinner tonight";
@@ -114,5 +189,101 @@ public class MessageTest {
         new Messages(RECIPIENT_2, TEXT_2).sentMessage(2);   // discarded: total unchanged
         assertEquals(before + 1, Messages.returnTotalMessages());
     }
-   
-}
+    
+      // TEST 1: Sent Messages Array
+    @Test
+    public void testSentMessagesArray() {
+
+        assertEquals(2,
+                Messages.getSentMessages().size());
+
+        assertEquals("Did you get the cake?",
+                Messages.getSentMessages()
+                        .get(0).getMessageText());
+
+        assertEquals("It is dinner time !",
+                Messages.getSentMessages()
+                        .get(1).getMessageText());
+    }
+
+    // TEST 2: Longest Message
+    @Test
+    public void testLongestMessage() {
+
+        String expected =
+                "Where are you? You are late! I have asked you to be on time.";
+
+        String actual = Messages.getLongestMessage();
+
+        assertEquals(expected, actual);
+    }
+
+    // TEST 3: Search by Message ID
+    @Test
+    public void testSearchMessageID() {
+
+        String id = message4.getMessageID();
+
+        String expected = "It is dinner time !";
+
+        String actual = Messages.getMessageByID(id);
+
+        assertEquals(expected, actual);
+    }
+
+    // TEST 4: Search by Recipient
+    @Test
+    public void testSearchRecipient() {
+
+        String expected =
+                "Where are you? You are late! I have asked you to be on time."
+                + "Ok, I am leaving without you.";
+
+        String actual = Messages.searchRecipient(
+                "+27838884567");
+
+        assertEquals(expected, actual);
+    }
+
+    // TEST 5: Delete by Message Hash
+    @Test
+    public void testDeleteMessageByHash() {
+
+        String hash = message2.getMessageHash();
+
+        String expected =
+                "Message: \"Where are you? You are late! I have asked you to be on time.\" successfully deleted.";
+
+        String actual = Messages.deleteMessageByHash(hash);
+
+        assertEquals(expected, actual);
+
+        // Check that only one stored message remains
+        assertEquals(1,
+                Messages.getStoredMessages().size());
+    }
+
+    // TEST 6: Display Report
+    @Test
+    public void testDisplayReport() {
+
+        String report = Messages.displayReport();
+
+        assertEquals(true,
+                report.contains("Message Hash:"));
+
+        assertEquals(true,
+                report.contains("Recipient:"));
+
+        assertEquals(true,
+                report.contains("Message:"));
+
+        assertEquals(true,
+                report.contains("Did you get the cake?"));
+
+        assertEquals(true,
+                report.contains("It is dinner time !"));
+    }
+}   
+    
+

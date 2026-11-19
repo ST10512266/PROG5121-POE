@@ -19,6 +19,7 @@ public class POE {
          
         Scanner scanner= new Scanner(System.in);
         
+         Messages.loadMessages();
         
          boolean running = true;
         boolean registered = false;
@@ -146,37 +147,42 @@ public class POE {
                 
     }
             
-   public static void startQuickChat(Scanner scanner) {
+   public static String startQuickChat(Scanner scanner) {
+       
+       
+        int messagesSent = 0;
+        boolean running = true;
+        
 
+    System.out.println("Welcome to QuickChat.");
     
-
-    int messagesSent = 0;
-    boolean running = true;
+    
+    System.out.println("How many messages would you like to send? ");
+     int numberOfMessages = Integer.parseInt(scanner.nextLine().trim());
+     
+      while (numberOfMessages < 0) {
+              System.out.println("Please enter zero or a positive number: ");
+              numberOfMessages = scanner.nextInt();
+              scanner.nextLine();
+        }
+     
+     
+   
 
     while (running) {
 
         System.out.println();
         System.out.println("===== QUICKCHAT MENU =====");
         System.out.println("1. Send Messages");
-        System.out.println("2. Show recently sent messages");
+        System.out.println("2. Show Recently Sent Messages");
         System.out.println("3. Quit");
+        System.out.println("4. Stored Messages"); 
         System.out.println("Choose an option: ");
 
         int option = Integer.parseInt(scanner.nextLine().trim());
 
         if (option == 1) {
-            
-            System.out.println("Welcome to QuickChat.");
-
-            System.out.println("How many messages would you like to send? ");
-
-                int numberOfMessages = Integer.parseInt(scanner.nextLine().trim());
-
-         while (numberOfMessages < 0) {
-              System.out.println("Please enter zero or a positive number: ");
-              numberOfMessages = scanner.nextInt();
-              scanner.nextLine();
-        }
+           
 
             if (messagesSent >= numberOfMessages) {
                 System.out.println("You have reach your message limit." );
@@ -199,33 +205,24 @@ public class POE {
 
                  Messages message = new Messages(recipient, messageText);
                 
-
+                 messagesSent++;
                   //check Recipient
                   System.out.println(message.checkRecipientCell());
                   
                   
-                   System.out.println("Choose: 1) Send  2) Disregard  3) Store");
-                   int choice = scanner.nextInt();
-                     scanner.nextLine();   // clear the leftover newline
+                    System.out.println("Choose:");
+                    System.out.println("1) Send");    
+                    System.out.println("2) Disregard");
+                    System.out.println("3) Store");      
+                   
+                    
+               int choice = Integer.parseInt(scanner.nextLine());
 
-                     System.out.println(message.sentMessage(choice));
+              String result = message.sentMessage(choice);
 
-                     if (choice == 1) {
-                          // sent: show the details
-                         System.out.println(message.printMessages());
-                    } 
-                     else if (choice == 2) {
-                        // disregard: sentMessage() tells the user to press 0 to delete
-                        int delete = scanner.nextInt();
-                          scanner.nextLine();
-                         if (delete == 0) {
-                           System.out.println("Message deleted.");
-                          }
-                    } 
-                      else if (choice == 3) {
-                         // store: sentMessage() already called storeMessage(), nothing more to do
-                     System.out.println("Message saved to storedMessages.json");
-                     }
+               System.out.println(result);
+
+        
                    
                
                    
@@ -242,18 +239,82 @@ public class POE {
             System.out.println("Thank you for using QuickChat.");
             
             System.exit(0);
-
-        } else {
-
+          }  
+          else if (option ==4){
+             storedMessagesMenu();
+          }
+            else {
             System.out.println(
-                "Invalid option. Please choose 1, 2 or 3."
-            );
+                "Invalid option. Please choose 1, 2 , 3 or 4.");
         }
+
+        }
+        return null;
+       
+                 }
+    public static void storedMessagesMenu() {
+
+    Scanner scanner = new Scanner(System.in);
+
+    int choice;
+
+    do {
+
+        System.out.println("\n===== STORED MESSAGES =====");
+        System.out.println("1. Display sender and recipient");
+        System.out.println("2. Display longest message");
+        System.out.println("3. Search by Message ID");
+        System.out.println("4. Search by Recipient");
+        System.out.println("5. Delete using Message Hash");
+        System.out.println("6. Display Full Report");
+        System.out.println("7. Back");
+
+        System.out.print("Choose an option: ");
+        choice = Integer.parseInt(scanner.nextLine());
+
+        switch (choice) {
+
+            case 1 -> System.out.println(Messages.displayStoredMessages());
+
+            case 2 -> System.out.println(Messages.getLongestMessage());
+
+            case 3 -> {
+                System.out.print("Enter Message ID: ");
+                String id = scanner.nextLine();
+                System.out.println(Messages.getMessageByID(id));
+            }
+
+            case 4 -> {
+                System.out.print("Enter Recipient: ");
+                String recipient = scanner.nextLine();
+                System.out.println(Messages.searchRecipient(recipient));
+            }
+
+            case 5 -> {
+                System.out.print("Enter Message Hash: ");
+                String hash = scanner.nextLine();
+                System.out.println(Messages.deleteMessageByHash(hash));
+            }
+
+            case 6 -> System.out.println(Messages.displayReport());
+
+            case 7 -> System.out.println("Returning to Main Menu...");
+
+            default -> System.out.println("Invalid option.");
+
+        }
+
+    } while (choice != 7);
+
+  }
+
+    private void storeMessage(Messages message) {
+       Messages.storeMessages(message);
     }
 }
 
              
-}
+
 
                  
 
